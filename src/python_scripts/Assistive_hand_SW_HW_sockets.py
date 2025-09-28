@@ -12,7 +12,7 @@ from robodk.robomath import *
 relative_path = "src/roboDK/Assistive_UR5e.rdk"
 absolute_path = os.path.abspath(relative_path)
 RDK = Robolink()
-RDK.AddFile(absolute_path)
+#RDK.AddFile(absolute_path)
 
 # Robot setup
 robot = RDK.Item("UR5e")

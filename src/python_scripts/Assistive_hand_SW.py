@@ -11,7 +11,7 @@ absolute_path = os.path.abspath(relative_path)
 
 # Start RoboDK with the project file
 RDK = Robolink()
-RDK.AddFile(absolute_path)
+#RDK.AddFile(absolute_path)
 
 # Retrieve items from the RoboDK station
 robot = RDK.Item("UR5e")
