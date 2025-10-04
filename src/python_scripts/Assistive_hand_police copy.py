@@ -43,13 +43,47 @@ timel = 4
 
 # URScript commands
 set_tcp = "set_tcp(p[0.000000, 0.000000, 0.050000, 0.000000, 0.000000, 0.000000])"
-movel_init = f"movel(p[0.000000, -0.250115, 0.650000, 0.461594, -0.461594, 1.521061],{accel_mss},{speed_ms},{timel},0.000)"
-movel_stop_car = f" movel(p[0.000000, -0.550440, 0.650000, 0.000000, 0.000000, 1.570796],{accel_mss},{speed_ms},{timel},0.000)"
-movel_people_1 = f"movel(p[0.420932, -0.429770, 0.500000, 1.570796, 0.000000, 0.000000],{accel_mss},{speed_ms},{timel},0.000)"
-movel_people_2 = f"movel(p[-0.348293, -0.479116, 0.500000, 1.570796, 0.000000, 0.000000],{accel_mss},{speed_ms},{timel},0.000)"
-movel_stop_people = f"movel([-0.604099, -2.860926, 1.747075, 2.684648, -1.570796, -0.966698],{accel_mss},{speed_ms},{timel},0.000)"
-movel_car_1 = f"movel(p[-0.153410, -0.521877, 0.660750, 0.199045, 0.163090, -1.365973],{accel_mss},{speed_ms},{timel},0.000)"
-movec_car_2 = f"movec(p[-0.131592, -0.353295, 0.748730, -0.062968, -0.062970, -1.569875],p[-0.131593, -0.015090, 0.712308, -0.625258, -0.625264, -1.478832],{accel_mss},{speed_ms},{blend_r},1)"
+#movel_init = f"movel(p[0.000000, -0.250115, 0.650000, 0.461594, -0.461594, 1.521061],{accel_mss},{speed_ms},{timel},0.000)"
+#movel_stop_car = f" movel(p[0.000000, -0.550440, 0.650000, 0.000000, 0.000000, 1.570796],{accel_mss},{speed_ms},{timel},0.000)"
+#movel_people_1 = f"movel(p[0.420932, -0.429770, 0.500000, 1.570796, 0.000000, 0.000000],{accel_mss},{speed_ms},{timel},0.000)"
+#movel_people_2 = f"movel(p[-0.348293, -0.479116, 0.500000, 1.570796, 0.000000, 0.000000],{accel_mss},{speed_ms},{timel},0.000)"
+#movel_stop_people = f"movel([-0.604099, -2.860926, 1.747075, 2.684648, -1.570796, -0.966698],{accel_mss},{speed_ms},{timel},0.000)"
+#movel_car_1 = f"movel(p[-0.153410, -0.521877, 0.660750, 0.199045, 0.163090, -1.365973],{accel_mss},{speed_ms},{timel},0.000)"
+#movec_car_2 = f"movec(p[-0.131592, -0.353295, 0.748730, -0.062968, -0.062970, -1.569875],p[-0.131593, -0.015090, 0.712308, -0.625258, -0.625264, -1.478832],{accel_mss},{speed_ms},{blend_r},1)"
+
+# =========================
+# Definición de movimientos desde Targets (usando joints en radianes)
+# =========================
+
+# INIT
+j1, j2, j3, j4, j5, j6 = np.radians(Init_target.Joints().tolist()[0])
+movel_init = f"movel([{j1},{j2},{j3},{j4},{j5},{j6}],{accel_mss},{speed_ms},{timel},{blend_r})"
+
+# STOP CAR
+j1, j2, j3, j4, j5, j6 = np.radians(Stop_car_target.Joints().tolist()[0])
+movel_stop_car = f"movel([{j1},{j2},{j3},{j4},{j5},{j6}],{accel_mss},{speed_ms},{timel},{blend_r})"
+
+# PEOPLE 1
+j1, j2, j3, j4, j5, j6 = np.radians(Move_people_1_target.Joints().tolist()[0])
+movel_people_1 = f"movel([{j1},{j2},{j3},{j4},{j5},{j6}],{accel_mss},{speed_ms},{timel},{blend_r})"
+
+# PEOPLE 2
+j1, j2, j3, j4, j5, j6 = np.radians(Move_people_2_target.Joints().tolist()[0])
+movel_people_2 = f"movel([{j1},{j2},{j3},{j4},{j5},{j6}],{accel_mss},{speed_ms},{timel},{blend_r})"
+
+# STOP PEOPLE
+j1, j2, j3, j4, j5, j6 = np.radians(Stop_people_target.Joints().tolist()[0])
+movel_stop_people = f"movel([{j1},{j2},{j3},{j4},{j5},{j6}],{accel_mss},{speed_ms},{timel},{blend_r})"
+
+# CAR 1
+j1, j2, j3, j4, j5, j6 = np.radians(Move_car_1_target.Joints().tolist()[0])
+movel_car_1 = f"movel([{j1},{j2},{j3},{j4},{j5},{j6}],{accel_mss},{speed_ms},{timel},{blend_r})"
+
+# CAR 2 con movec (requiere dos poses cartesianas, no joints)
+p1 = Pose_2_UR(Move_car_2_target.Pose())   # vía
+p2 = Pose_2_UR(Move_car_3_target.Pose())   # destino
+movec_car_2 = f"movec(p[{','.join(map(str,p1))}],p[{','.join(map(str,p2))}],{accel_mss},{speed_ms},{blend_r},1)"
+
 
 # Check robot connection
 def check_robot_port(ip, port):
