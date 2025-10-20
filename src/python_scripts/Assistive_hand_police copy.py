@@ -9,10 +9,12 @@ from robodk.robolink import *
 from robodk.robomath import *
 
 # Load RoboDK project from relative path
-relative_path = "src/roboDK/Police_hand_UR5e.rdk"
+relative_path = "roboDK/Police_hand_UR5e.rdk"
 absolute_path = os.path.abspath(relative_path)
 RDK = Robolink()
-RDK.AddFile(absolute_path)
+#time.sleep(5)
+#RDK.AddFile(absolute_path)
+#time.sleep(2)
 
 # Robot setup
 robot = RDK.Item("UR5e")
@@ -36,10 +38,11 @@ ROBOT_IP = '192.168.1.5'
 ROBOT_PORT = 30002
 accel_mss = 1.2
 speed_ms = 0.75
-blend_r = 0.452
+#blend_r = 0.452
+blend_r = 0.0
 timec = 8
 timej = 6
-timel = 4
+timel = 6
 
 # URScript commands
 set_tcp = "set_tcp(p[0.000000, 0.000000, 0.050000, 0.000000, 0.000000, 0.000000])"
@@ -56,33 +59,31 @@ set_tcp = "set_tcp(p[0.000000, 0.000000, 0.050000, 0.000000, 0.000000, 0.000000]
 # =========================
 
 # INIT
-j1, j2, j3, j4, j5, j6 = np.radians(Init_target.Joints().tolist()[0])
+j1, j2, j3, j4, j5, j6 = np.radians(Init_target.Joints().tolist())
 movel_init = f"movel([{j1},{j2},{j3},{j4},{j5},{j6}],{accel_mss},{speed_ms},{timel},{blend_r})"
 
 # STOP CAR
-j1, j2, j3, j4, j5, j6 = np.radians(Stop_car_target.Joints().tolist()[0])
+j1, j2, j3, j4, j5, j6 = np.radians(Stop_car_target.Joints().tolist())
 movel_stop_car = f"movel([{j1},{j2},{j3},{j4},{j5},{j6}],{accel_mss},{speed_ms},{timel},{blend_r})"
 
 # PEOPLE 1
-j1, j2, j3, j4, j5, j6 = np.radians(Move_people_1_target.Joints().tolist()[0])
+j1, j2, j3, j4, j5, j6 = np.radians(Move_people_1_target.Joints().tolist())
 movel_people_1 = f"movel([{j1},{j2},{j3},{j4},{j5},{j6}],{accel_mss},{speed_ms},{timel},{blend_r})"
 
 # PEOPLE 2
-j1, j2, j3, j4, j5, j6 = np.radians(Move_people_2_target.Joints().tolist()[0])
+j1, j2, j3, j4, j5, j6 = np.radians(Move_people_2_target.Joints().tolist())
 movel_people_2 = f"movel([{j1},{j2},{j3},{j4},{j5},{j6}],{accel_mss},{speed_ms},{timel},{blend_r})"
 
 # STOP PEOPLE
-j1, j2, j3, j4, j5, j6 = np.radians(Stop_people_target.Joints().tolist()[0])
+j1, j2, j3, j4, j5, j6 = np.radians(Stop_people_target.Joints().tolist())
 movel_stop_people = f"movel([{j1},{j2},{j3},{j4},{j5},{j6}],{accel_mss},{speed_ms},{timel},{blend_r})"
 
 # CAR 1
-j1, j2, j3, j4, j5, j6 = np.radians(Move_car_1_target.Joints().tolist()[0])
+j1, j2, j3, j4, j5, j6 = np.radians(Move_car_1_target.Joints().tolist())
 movel_car_1 = f"movel([{j1},{j2},{j3},{j4},{j5},{j6}],{accel_mss},{speed_ms},{timel},{blend_r})"
 
-# CAR 2 con movec (requiere dos poses cartesianas, no joints)
-p1 = Pose_2_UR(Move_car_2_target.Pose())   # vía
-p2 = Pose_2_UR(Move_car_3_target.Pose())   # destino
-movec_car_2 = f"movec(p[{','.join(map(str,p1))}],p[{','.join(map(str,p2))}],{accel_mss},{speed_ms},{blend_r},1)"
+# CAR 2 
+movec_car_2 = f"movec(p[-0.131592, -0.353295, 0.748730, -0.062968, -0.062970, -1.569875],p[-0.131593, -0.015090, 0.712308, -0.625258, -0.625264, -1.478832],{accel_mss},{speed_ms},{blend_r},1)"
 
 
 # Check robot connection
@@ -98,6 +99,7 @@ def check_robot_port(ip, port):
 # Send URScript command
 def send_ur_script(command):
     robot_socket.send((command + "\n").encode())
+    print("Real command:", command)
 
 # Wait for robot response
 def receive_response(t):
@@ -111,7 +113,7 @@ def receive_response(t):
 # Movements
 def Init():
     print("Init")
-    robot.MoveL(Init_target, True)
+    robot.MoveJ(Init_target, True)
     robot.MoveL(Stop_car_target, True)
     print("Stop_car_target REACHED")
     if robot_is_connected:
@@ -122,6 +124,7 @@ def Init():
         receive_response(timel)
         send_ur_script(movel_stop_car)
         receive_response(timel)
+        print("Init REAL UR5e finished")
     else:
         print("UR5e not connected. Simulation only.")
 
@@ -202,5 +205,5 @@ def main():
 # Run and close
 if __name__ == "__main__":
     main()
-    RDK.CloseRoboDK()
+    # RDK.CloseRoboDK()
     #confirm_close()
